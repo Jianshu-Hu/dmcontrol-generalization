@@ -20,6 +20,8 @@ def parse_args():
 	parser.add_argument('--init_steps', default=1000, type=int)
 	parser.add_argument('--batch_size', default=128, type=int)
 	parser.add_argument('--hidden_dim', default=1024, type=int)
+	parser.add_argument('--rb_capacity', default='500k', type=str)
+	parser.add_argument('--complex_DA', default='random_overlay', type=str)
 
 	# actor
 	parser.add_argument('--actor_lr', default=1e-3, type=float)
@@ -60,15 +62,16 @@ def parse_args():
 	parser.add_argument('--svea_beta', default=0.5, type=float)
 
 	# eval
-	parser.add_argument('--save_freq', default='100k', type=str)
-	parser.add_argument('--eval_freq', default='10k', type=str)
-	parser.add_argument('--eval_episodes', default=30, type=int)
+	parser.add_argument('--save_freq', default=100, type=int) # save every 100 episodes
+	parser.add_argument('--eval_freq', default=10, type=int) #eval every 10 episodes
+	parser.add_argument('--eval_episodes', default=10, type=int)
 	parser.add_argument('--distracting_cs_intensity', default=0., type=float)
 
 	# misc
 	parser.add_argument('--seed', default=None, type=int)
 	parser.add_argument('--log_dir', default='logs', type=str)
 	parser.add_argument('--save_video', default=False, action='store_true')
+	parser.add_argument('--tag', default='test', type=str)
 
 	args = parser.parse_args()
 
@@ -82,9 +85,12 @@ def parse_args():
 	assert args.distracting_cs_intensity in intensities, f'distracting_cs has only been implemented for intensities: {intensities}'
 
 	args.train_steps = int(args.train_steps.replace('k', '000'))
-	args.save_freq = int(args.save_freq.replace('k', '000'))
-	args.eval_freq = int(args.eval_freq.replace('k', '000'))
+	args.rb_capacity = int(args.rb_capacity.replace('k', '000'))
+	args.train_steps = args.train_steps // args.action_repeat
 
+	args.save_freq = int(args.save_freq * (args.episode_length // args.action_repeat)) 
+	args.eval_freq = int(args.eval_freq * (args.episode_length // args.action_repeat)) 
+	
 	if args.eval_mode == 'none':
 		args.eval_mode = None
 

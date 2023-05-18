@@ -105,6 +105,8 @@ class ReplayBuffer(object):
         self.idx = 0
         self.full = False
 
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
     def add(self, obs, action, reward, next_obs, done):
         obses = (obs, next_obs)
         if self.idx >= len(self._obses):
@@ -136,17 +138,17 @@ class ReplayBuffer(object):
     def sample_soda(self, n=None):
         idxs = self._get_idxs(n)
         obs, _ = self._encode_obses(idxs)
-        return torch.as_tensor(obs).cuda().float()
+        return torch.as_tensor(obs).to(self.device).float()
 
     def __sample__(self, n=None):
         idxs = self._get_idxs(n)
 
         obs, next_obs = self._encode_obses(idxs)
-        obs = torch.as_tensor(obs).cuda().float()
-        next_obs = torch.as_tensor(next_obs).cuda().float()
-        actions = torch.as_tensor(self.actions[idxs]).cuda()
-        rewards = torch.as_tensor(self.rewards[idxs]).cuda()
-        not_dones = torch.as_tensor(self.not_dones[idxs]).cuda()
+        obs = torch.as_tensor(obs).to(self.device).float()
+        next_obs = torch.as_tensor(next_obs).to(self.device).float()
+        actions = torch.as_tensor(self.actions[idxs]).to(self.device)
+        rewards = torch.as_tensor(self.rewards[idxs]).to(self.device)
+        not_dones = torch.as_tensor(self.not_dones[idxs]).to(self.device)
 
         return obs, actions, rewards, next_obs, not_dones
 
@@ -168,6 +170,7 @@ class ReplayBuffer(object):
     def sample_svea(self, n=None, pad=4):
         obs, actions, rewards, next_obs, not_dones = self.__sample__(n=n)
         obs = augmentations.random_shift(obs, pad)
+        next_obs = augmentations.random_shift(obs, pad)
 
         return obs, actions, rewards, next_obs, not_dones
 
