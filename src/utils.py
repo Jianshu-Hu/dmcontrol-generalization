@@ -170,7 +170,7 @@ class ReplayBuffer(object):
     def sample_svea(self, n=None, pad=4):
         obs, actions, rewards, next_obs, not_dones = self.__sample__(n=n)
         obs = augmentations.random_shift(obs, pad)
-        next_obs = augmentations.random_shift(obs, pad)
+        next_obs = augmentations.random_shift(next_obs, pad)
 
         return obs, actions, rewards, next_obs, not_dones
 
