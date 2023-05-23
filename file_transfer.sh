@@ -1,8 +1,8 @@
 source=/bigdata/users/jhu/dmcontrol-generalization/outputs/
 target=~/PycharmProjects/dmcontrol-generalization/outputs/
 
-source2=/bigdata/users/jhu/dmcontrol-generalization/logs/
-target2=~/PycharmProjects/dmcontrol-generalization/logs/
+source2=/bigdata/users/jhu/dmcontrol-generalization/logs/saved_fig/
+target2=~/PycharmProjects/dmcontrol-generalization/logs/saved_fig/
 
 file_name=*
 file_name2=*

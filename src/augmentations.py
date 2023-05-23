@@ -39,6 +39,7 @@ def _load_places(batch_size=128, image_size=84, num_workers=10, use_val=False):
 	if places_iter is None:
 		raise FileNotFoundError('failed to find places365 data at any of the specified paths')
 
+
 def _get_places_batch(batch_size):
 	global places_iter
 	try:
@@ -71,6 +72,45 @@ def random_overlay(x, dataset='places365_standard', return_imgs=False):
 		return imgs
 	else:
 		return ((1-alpha)*(x/255.) + (alpha)*imgs)*255.
+
+
+def cut_random_overlay(x, dataset='places365_standard', return_imgs=False):
+	"""Cut the images into patches and randomly overlay an image from Places"""
+	global places_iter
+
+	if dataset == 'places365_standard':
+		if places_dataloader is None:
+			_load_places(batch_size=x.size(0), image_size=x.size(-1))
+		imgs = _get_places_batch(batch_size=x.size(0)).repeat(1, x.size(1)//3, 1, 1)
+	else:
+		raise NotImplementedError(f'overlay has not been implemented for dataset "{dataset}"')
+
+	device = 'cuda' if torch.cuda.is_available() else 'cpu'
+	batch_size = x.size(dim=0)
+	alpha_1 = 0.5 * torch.rand((batch_size, 1, 1, 1)).to(device)
+	alpha_2 = 0.5 * torch.rand((batch_size, 1, 1, 1)).to(device)
+	# x: [0, 255]
+	# imgs: [0, 1]
+	#print(imgs.shape)
+	if return_imgs:
+		return imgs
+	else:
+		mixed_img = x.clone()
+		H = x.size(dim=2)
+		W = x.size(dim=3)
+		if np.random.rand(1) < 0.5:
+			# horizontal cut
+			mixed_img[:, :, :int(H/2), :] = ((1-alpha_1)*(x[:, :, :int(H/2), :]/255.) +
+											 (alpha_1)*imgs[:, :, :int(H/2), :])*255.
+			mixed_img[:, :, int(H/2):, :] = ((1-alpha_2)*(x[:, :, int(H/2):, :]/255.) +
+											 (alpha_2)*imgs[:, :, int(H/2):, :])*255.
+		else:
+			# vertical cut
+			mixed_img[:, :, :, :int(W / 2)] = ((1 - alpha_1) * (x[:, :, :, :int(W / 2)] / 255.) +
+											   (alpha_1) * imgs[:, :, :, :int(W / 2)]) * 255.
+			mixed_img[:, :, :, int(W / 2):] = ((1 - alpha_2) * (x[:, :, :, int(W / 2):] / 255.) +
+											   (alpha_2) * imgs[:, :, :, int(W / 2):]) * 255.
+		return mixed_img
 
 
 def random_conv(x):
