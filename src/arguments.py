@@ -75,7 +75,7 @@ def parse_args():
 
 	args = parser.parse_args()
 
-	assert args.algorithm in {'sac', 'rad', 'curl', 'pad', 'soda', 'drq', 'svea', 'cro'}, f'specified algorithm "{args.algorithm}" is not supported'
+	assert args.algorithm in {'sac', 'rad', 'curl', 'pad', 'soda', 'drq', 'svea', 'eda'}, f'specified algorithm "{args.algorithm}" is not supported'
 
 	assert args.eval_mode in {'train', 'color_easy', 'color_hard', 'video_easy', 'video_hard', 'distracting_cs', 'none'}, f'specified mode "{args.eval_mode}" is not supported'
 	assert args.seed is not None, 'must provide seed for experiment'
@@ -87,6 +87,8 @@ def parse_args():
 	args.train_steps = int(args.train_steps.replace('k', '000'))
 	args.rb_capacity = int(args.rb_capacity.replace('k', '000'))
 	args.train_steps = args.train_steps // args.action_repeat
+	if args.train_steps <= args.rb_capacity:
+		args.rb_capacity = args.train_steps
 
 	args.save_freq = int(args.save_freq * (args.episode_length // args.action_repeat)) 
 	args.eval_freq = int(args.eval_freq * (args.episode_length // args.action_repeat)) 

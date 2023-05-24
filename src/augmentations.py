@@ -85,16 +85,16 @@ def cut_random_overlay(x, dataset='places365_standard', return_imgs=False):
 	else:
 		raise NotImplementedError(f'overlay has not been implemented for dataset "{dataset}"')
 
-	device = 'cuda' if torch.cuda.is_available() else 'cpu'
-	batch_size = x.size(dim=0)
-	alpha_1 = 0.5 * torch.rand((batch_size, 1, 1, 1)).to(device)
-	alpha_2 = 0.5 * torch.rand((batch_size, 1, 1, 1)).to(device)
 	# x: [0, 255]
 	# imgs: [0, 1]
 	#print(imgs.shape)
 	if return_imgs:
 		return imgs
 	else:
+		device = 'cuda' if torch.cuda.is_available() else 'cpu'
+		batch_size = x.size(dim=0)
+		alpha_1 = 0.5 * torch.rand((batch_size, 1, 1, 1)).to(device)
+		alpha_2 = 0.5 * torch.rand((batch_size, 1, 1, 1)).to(device)
 		mixed_img = x.clone()
 		H = x.size(dim=2)
 		W = x.size(dim=3)
@@ -110,6 +110,37 @@ def cut_random_overlay(x, dataset='places365_standard', return_imgs=False):
 											   (alpha_1) * imgs[:, :, :, :int(W / 2)]) * 255.
 			mixed_img[:, :, :, int(W / 2):] = ((1 - alpha_2) * (x[:, :, :, int(W / 2):] / 255.) +
 											   (alpha_2) * imgs[:, :, :, int(W / 2):]) * 255.
+		return mixed_img
+
+
+def cut_mix(x, dataset='places365_standard', return_imgs=False):
+	"""Cut the images into patches and randomly overlay an image from Places"""
+	global places_iter
+
+	if dataset == 'places365_standard':
+		if places_dataloader is None:
+			_load_places(batch_size=x.size(0), image_size=x.size(-1))
+		imgs = _get_places_batch(batch_size=x.size(0)).repeat(1, x.size(1)//3, 1, 1)
+	else:
+		raise NotImplementedError(f'overlay has not been implemented for dataset "{dataset}"')
+	# x: [0, 255]
+	# imgs: [0, 1]
+	#print(imgs.shape)
+	if return_imgs:
+		return imgs
+	else:
+		H = x.size(dim=2)
+		W = x.size(dim=3)
+		resize_H = np.random.randint(low=int(H*0.6), high=H)
+		resize_W = np.random.randint(low=int(W*0.6), high=W)
+		# cut
+		resize = TF.Resize(size=(resize_H, resize_W))
+		corner_H = np.random.randint(low=0, high=H - resize_H)
+		corner_W = np.random.randint(low=0, high=W - resize_W)
+		mixed_img = imgs.clone()*255.0
+		# mix
+		mixed_img[:, :, corner_H:corner_H+resize_H, corner_W:corner_W+resize_W] = resize(x)
+
 		return mixed_img
 
 

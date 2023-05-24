@@ -9,7 +9,7 @@ import algorithms.modules as m
 from algorithms.sac import SAC
 
 
-class CRO(SAC):
+class EDA(SAC):
 	def __init__(self, obs_shape, action_shape, args):
 		super().__init__(obs_shape, action_shape, args)
 		self.svea_alpha = args.svea_alpha
@@ -23,11 +23,15 @@ class CRO(SAC):
 								 target_Q2) - self.alpha.detach() * log_pi
 			target_Q = reward + (not_done * self.discount * target_V)
 
-		if not self.args.complex_DA == 'random_overlay':
-			raise ValueError('currently, this method is designed for random overlay')
+		if self.args.complex_DA == 'cut_random_overlay':
+			data_aug = augmentations.cut_random_overlay
+		elif self.args.complex_DA == 'cut_mix':
+			data_aug = augmentations.cut_mix
+		else:
+			raise ValueError('Undefined data augmentation')
 
 		if self.svea_alpha == self.svea_beta:
-			obs = utils.cat(obs, augmentations.cut_random_overlay(obs.clone()))
+			obs = utils.cat(obs, data_aug(obs.clone()))
 			
 			action = utils.cat(action, action)
 			target_Q = utils.cat(target_Q, target_Q)
@@ -40,7 +44,7 @@ class CRO(SAC):
 			critic_loss = self.svea_alpha * \
 				(F.mse_loss(current_Q1, target_Q) + F.mse_loss(current_Q2, target_Q))
 
-			obs_aug = augmentations.cut_random_overlay(obs.clone())
+			obs_aug = data_aug(obs.clone())
 			current_Q1_aug, current_Q2_aug = self.critic(obs_aug, action)
 			critic_loss += self.svea_beta * \
 				(F.mse_loss(current_Q1_aug, target_Q) + F.mse_loss(current_Q2_aug, target_Q))

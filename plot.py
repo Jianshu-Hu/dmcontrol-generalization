@@ -59,5 +59,5 @@ def plot_several_folders(prefix, folders, label_list=[], plot_or_save='save', ti
 
 
 prefix = 'walker_walk/'
-folders = ['svea', 'svea_random_alpha']
-plot_several_folders(prefix, folders, title='svea')
+folders = ['svea', 'svea_random_alpha', 'cut_random_overlay']
+plot_several_folders(prefix, folders, title='walker_walk_more_da')
