@@ -131,15 +131,15 @@ def cut_mix(x, dataset='places365_standard', return_imgs=False):
 	else:
 		H = x.size(dim=2)
 		W = x.size(dim=3)
-		resize_H = np.random.randint(low=int(H*0.6), high=H)
-		resize_W = np.random.randint(low=int(W*0.6), high=W)
+		resize_H = np.random.randint(low=int(H*0.7), high=H)
+		resize_W = np.random.randint(low=int(W*0.7), high=W)
 		# cut
-		resize = TF.Resize(size=(resize_H, resize_W))
+		crop = TF.RandomCrop(size=(resize_H, resize_W))
 		corner_H = np.random.randint(low=0, high=H - resize_H)
 		corner_W = np.random.randint(low=0, high=W - resize_W)
 		mixed_img = imgs.clone()*255.0
 		# mix
-		mixed_img[:, :, corner_H:corner_H+resize_H, corner_W:corner_W+resize_W] = resize(x)
+		mixed_img[:, :, corner_H:corner_H+resize_H, corner_W:corner_W+resize_W] = crop(x)
 
 		return mixed_img
 
