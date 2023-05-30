@@ -59,5 +59,8 @@ def plot_several_folders(prefix, folders, label_list=[], plot_or_save='save', ti
 
 
 prefix = 'walker_walk/'
-folders = ['svea', 'svea_random_alpha', 'cut_random_overlay', 'resize_mix', 'cut_mix']
-plot_several_folders(prefix, folders, title='walker_walk_more_da')
+folders_1 = ['svea_random_overlay', 'svea_random_alpha', 'cut_random_overlay', 'resize_mix', 'cut_mix']
+folders_2 = ['svea_random_conv', 'random_conv_gaussian_not_detach_encoder', 'random_conv_gaussian_detach_encoder',
+             'random_conv_gaussian_without_tanh_detach_encoder', 'random_conv_beta_detach_encoder']
+plot_several_folders(prefix, folders_1, title='walker_walk_more_da')
+plot_several_folders(prefix, folders_2, title='walker_walk_distributional_random_conv')

@@ -61,6 +61,10 @@ def parse_args():
 	parser.add_argument('--svea_alpha', default=0.5, type=float)
 	parser.add_argument('--svea_beta', default=0.5, type=float)
 
+	# drc
+	parser.add_argument('--drc_dist_type', default='normal', type=str)
+	parser.add_argument('--actor_KL_weight', default=0.1, type=float)
+
 	# eval
 	parser.add_argument('--save_freq', default=100, type=int) # save every 100 episodes
 	parser.add_argument('--eval_freq', default=10, type=int) #eval every 10 episodes
@@ -75,7 +79,7 @@ def parse_args():
 
 	args = parser.parse_args()
 
-	assert args.algorithm in {'sac', 'rad', 'curl', 'pad', 'soda', 'drq', 'svea', 'eda'}, f'specified algorithm "{args.algorithm}" is not supported'
+	assert args.algorithm in {'sac', 'rad', 'curl', 'pad', 'soda', 'drq', 'svea', 'eda', 'drc'}, f'specified algorithm "{args.algorithm}" is not supported'
 
 	assert args.eval_mode in {'train', 'color_easy', 'color_hard', 'video_easy', 'video_hard', 'distracting_cs', 'none'}, f'specified mode "{args.eval_mode}" is not supported'
 	assert args.seed is not None, 'must provide seed for experiment'

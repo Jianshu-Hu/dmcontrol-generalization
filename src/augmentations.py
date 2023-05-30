@@ -156,6 +156,49 @@ def random_conv(x):
 	return total_out.reshape(n, c, h, w)
 
 
+def distributional_random_conv(x, dist_type, params, with_grad=False):
+	"""Applies a random conv2d with a specified distribution"""
+	n, c, h, w = x.shape
+	for i in range(n):
+		if dist_type == 'normal':
+			# the std must be larger or equal to 0
+			params[1] = torch.clamp(params[1], min=0.00001)
+			dist = torch.distributions.normal.Normal(loc=params[0], scale=params[1])
+			if with_grad:
+				weights = dist.rsample()
+			else:
+				weights = dist.sample()
+			# # normalize to (0,1)
+			# weights = (torch.tanh(weights) + torch.tensor(np.ones(81), dtype=torch.float).to(weights.device)) / 2
+		elif dist_type == 'beta':
+			# the concentration must be larger or equal to 0
+			params[0] = torch.clamp(params[0], min=0.00001)
+			params[1] = torch.clamp(params[1], min=0.00001)
+			dist = torch.distributions.beta.Beta(concentration0=params[0], concentration1=params[1])
+			if with_grad:
+				weights = dist.rsample()
+			else:
+				weights = dist.sample()
+		elif dist_type == 'categorical':
+			dist = torch.distributions.categorical.Categorical(F.softmax(params))
+			weights = dist.sample()
+			log_prob = torch.sum(dist.log_prob(weights), dim=-1, keepdim=True)
+			# the categorical dist samples from [0,1,...,N]
+			weights = weights / float(dist.probs.size(1)-1)
+
+		weights = torch.reshape(weights, (3, 3, 3, 3))
+		temp_x = x[i:i+1].reshape(-1, 3, h, w)/255.
+		temp_x = F.pad(temp_x, pad=[1]*4, mode='replicate')
+		out = torch.sigmoid(F.conv2d(temp_x, weights))*255.
+		total_out = out if i == 0 else torch.cat([total_out, out], axis=0)
+		if dist_type == 'categorical' and with_grad:
+			total_log_prob = log_prob if i == 0 else torch.cat([total_log_prob, log_prob], axis=0)
+	if dist_type == 'categorical' and with_grad:
+		return total_out.reshape(n, c, h, w), total_log_prob.reshape(n, -1)
+	else:
+		return total_out.reshape(n, c, h, w)
+
+
 def batch_from_obs(obs, batch_size=32):
 	"""Copy a single observation along the batch dimension"""
 	if isinstance(obs, torch.Tensor):

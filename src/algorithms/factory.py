@@ -6,6 +6,7 @@ from algorithms.soda import SODA
 from algorithms.drq import DrQ
 from algorithms.svea import SVEA
 from algorithms.eda import EDA
+from algorithms.drc import DRC
 
 algorithm = {
 	'sac': SAC,
@@ -15,7 +16,8 @@ algorithm = {
 	'soda': SODA,
 	'drq': DrQ,
 	'svea': SVEA,
-	'eda': EDA
+	'eda': EDA,
+	'drc': DRC
 }
 
 
