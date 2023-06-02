@@ -194,7 +194,7 @@ def distributional_random_conv(x, dist_type, params, with_grad=False):
 		if dist_type == 'categorical' and with_grad:
 			total_log_prob = log_prob if i == 0 else torch.cat([total_log_prob, log_prob], axis=0)
 	if dist_type == 'categorical' and with_grad:
-		return total_out.reshape(n, c, h, w), total_log_prob.reshape(n, -1)
+		return total_out.reshape(n, c, h, w), total_log_prob.reshape(n)
 	else:
 		return total_out.reshape(n, c, h, w)
 

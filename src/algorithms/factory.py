@@ -7,6 +7,7 @@ from algorithms.drq import DrQ
 from algorithms.svea import SVEA
 from algorithms.eda import EDA
 from algorithms.drc import DRC
+from algorithms.wro import WRO
 
 algorithm = {
 	'sac': SAC,
@@ -17,7 +18,8 @@ algorithm = {
 	'drq': DrQ,
 	'svea': SVEA,
 	'eda': EDA,
-	'drc': DRC
+	'drc': DRC,
+	'wro': WRO
 }
 
 

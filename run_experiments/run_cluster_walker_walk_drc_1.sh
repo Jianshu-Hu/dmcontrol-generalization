@@ -4,7 +4,7 @@ cd /bigdata/users/jhu/dmcontrol-generalization
 source /bigdata/users/yjiang/miniconda3/bin/activate
 conda activate drq
 
-tag=walker_walk_drc_categorical_detach_encoder
+tag=walker_walk_drc_rerun_categorical_detach_encoder
 seed=1
 
 echo "start running $tag with seed $seed"
