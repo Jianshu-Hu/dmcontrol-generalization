@@ -12,7 +12,7 @@ from copy import deepcopy
 
 
 class WRO(SVEA):
-	# weighted random conv
+	# weighted random overlay
 	def __init__(self, obs_shape, action_shape, args):
 		super().__init__(obs_shape, action_shape, args)
 		self.svea_alpha = args.svea_alpha
@@ -71,6 +71,8 @@ class WRO(SVEA):
 
 			if L is not None:
 				L.log('train_critic/loss', critic_loss+critic_loss_aug, step)
+				L.log('train_critic/original_loss', critic_loss, step)
+				L.log('train_critic/aug_loss', critic_loss_aug, step)
 
 			loss = [critic_loss, critic_loss_aug]
 			# self.critic_optimizer.zero_grad()
@@ -124,7 +126,9 @@ class WRO(SVEA):
 				actor_loss_aug = (self.alpha.detach() * log_pi_aug - actor_Q_aug).mean()
 
 			if L is not None:
-				L.log('train_actor/loss', (actor_loss+actor_loss_aug)/2, step)
+				L.log('train_actor/loss', (actor_loss + actor_loss_aug) / 2, step)
+				L.log('train_actor/original_loss', (actor_loss) / 2, step)
+				L.log('train_actor/aug_loss', (actor_loss_aug) / 2, step)
 
 			loss = [actor_loss, actor_loss_aug]
 			# self.actor_optimizer.zero_grad()

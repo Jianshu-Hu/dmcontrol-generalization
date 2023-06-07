@@ -4,7 +4,7 @@ cd /bigdata/users/jhu/dmcontrol-generalization
 source /bigdata/users/yjiang/miniconda3/bin/activate
 conda activate drq
 
-tag=walker_walk_weighted_cut_random_overlay_q_diff_kl_diff_AC_proj_grad
+tag=walker_walk_sum_weighted_cut_random_overlay_q_diff_kl_diff_AC_proj_grad
 seed=3
 
 echo "start running $tag with seed $seed"

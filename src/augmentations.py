@@ -74,6 +74,29 @@ def random_overlay(x, dataset='places365_standard', return_imgs=False):
 		return ((1-alpha)*(x/255.) + (alpha)*imgs)*255.
 
 
+def initialize_dataset(batch_size, image_size, dataset='places365_standard'):
+	if dataset == 'places365_standard':
+		if places_dataloader is None:
+			_load_places(batch_size=batch_size, image_size=image_size)
+	else:
+		raise NotImplementedError(f'overlay has not been implemented for dataset "{dataset}"')
+
+	return len(places_dataloader.dataset)
+
+
+def distributional_random_overlay(x, params):
+	alpha = 0.5
+	dist = torch.distributions.categorical.Categorical(F.softmax(params))
+	index = dist.sample_n(x.size(0))
+	log_prob = (dist.log_prob(index)).reshape(x.size(0), 1)
+
+	subset = torch.utils.data.Subset(places_dataloader.dataset, index)
+	dataloader = torch.utils.data.DataLoader(subset, batch_size=x.size(0))
+	imgs, _ = next(iter(dataloader))
+	imgs = imgs.repeat(1, x.size(1)//3, 1, 1).to(x.device)
+	return ((1 - alpha) * (x / 255.) + (alpha) * imgs) * 255., log_prob
+
+
 def cut_random_overlay(x, dataset='places365_standard', return_imgs=False):
 	"""Cut the images into patches and randomly overlay an image from Places"""
 	global places_iter

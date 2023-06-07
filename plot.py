@@ -72,3 +72,15 @@ folders_3 = ['svea_random_overlay', 'svea_random_overlay_q_diff', 'svea_random_o
 plot_several_folders(prefix, folders_1, action_repeat, title='walker_walk_more_da')
 plot_several_folders(prefix, folders_2, action_repeat, title='walker_walk_distributional_random_conv')
 plot_several_folders(prefix, folders_3, action_repeat, title='walker_walk_weighted_random_overlay')
+
+
+prefix = 'ball_in_cup_catch/'
+action_repeat = 4
+folders_1 = ['svea_random_overlay', 'svea_cut_random_overlay_q_diff_kl_diff_AC_proj_grad',
+             'svea_cut_random_overlay_2imgs_q_diff_kl_diff_AC_proj_grad']
+plot_several_folders(prefix, folders_1, action_repeat, title='ball_in_cup_catch_weighted_random_overlay')
+
+prefix = 'cartpole_swingup/'
+action_repeat = 8
+folders_1 = ['svea_random_overlay', 'svea_cut_random_overlay_q_diff_kl_diff_AC_proj_grad']
+plot_several_folders(prefix, folders_1, action_repeat, title='cartpole_swingup_weighted_random_overlay')

@@ -4,7 +4,7 @@ cd /bigdata/users/jhu/dmcontrol-generalization
 source /bigdata/users/yjiang/miniconda3/bin/activate
 conda activate drq
 
-tag=ball_in_cup_catch_weighted_cut_random_overlay_q_diff_kl_diff_AC_proj_grad
+tag=ball_in_cup_catch_weighted_cut_random_overlay_2_imgs_q_diff_kl_diff_AC_proj_grad
 seed=3
 
 echo "start running $tag with seed $seed"
