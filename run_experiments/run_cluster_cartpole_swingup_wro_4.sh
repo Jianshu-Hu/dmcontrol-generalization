@@ -2,7 +2,7 @@
 
 cd /bigdata/users/jhu/dmcontrol-generalization
 source /bigdata/users/yjiang/miniconda3/bin/activate
-conda activate drq
+conda activate drq_jianshu
 
 tag=cartpole_swingup_weighted_cut_random_overlay_q_diff_kl_diff_AC_proj_grad
 seed=4

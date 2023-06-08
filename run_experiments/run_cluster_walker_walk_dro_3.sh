@@ -2,9 +2,9 @@
 
 cd /bigdata/users/jhu/dmcontrol-generalization
 source /bigdata/users/yjiang/miniconda3/bin/activate
-conda activate drq
+conda activate drq_jianshu
 
-tag=walker_walk_dro_minimize_critic_loss_reg_to_uniform
+tag=walker_walk_dro_maximize_q_loss_proj_grad
 seed=3
 
 echo "start running $tag with seed $seed"

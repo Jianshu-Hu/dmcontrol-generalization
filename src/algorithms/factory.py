@@ -9,6 +9,7 @@ from algorithms.eda import EDA
 from algorithms.drc import DRC
 from algorithms.wro import WRO
 from algorithms.dro import DRO
+from algorithms.esac import ESAC
 
 algorithm = {
 	'sac': SAC,
@@ -21,7 +22,8 @@ algorithm = {
 	'eda': EDA,
 	'drc': DRC,
 	'wro': WRO,
-	'dro': DRO
+	'dro': DRO,
+	'esac': ESAC
 }
 
 

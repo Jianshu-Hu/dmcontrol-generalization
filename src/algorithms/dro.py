@@ -18,13 +18,13 @@ class DRO(SVEA):
         self.params = torch.tensor(np.zeros(dataset_imgs_num), dtype=torch.float).to(self.device)
         self.params.requires_grad = True
         # optimizers
-        # self.dist_optimizer = torch.optim.Adam([self.params], lr=0.0001)
+        self.dist_optimizer = torch.optim.Adam([self.params], lr=0.0001)
 
+        self.critic_optimizer = m.PCGrad(torch.optim.Adam(
+            self.critic.parameters(), lr=args.critic_lr, betas=(args.critic_beta, 0.999)
+        ), reduction='sum')
         self.actor_optimizer = torch.optim.Adam(
-            list(self.actor.parameters()) + [self.params], lr=args.actor_lr, betas=(args.actor_beta, 0.999)
-        )
-        self.critic_optimizer = torch.optim.Adam(
-            list(self.critic.parameters()) + [self.params], lr=args.critic_lr, betas=(args.critic_beta, 0.999)
+            self.actor.parameters(), lr=args.actor_lr, betas=(args.actor_beta, 0.999)
         )
         self.prob_loss_weight = 0.1
 
@@ -44,36 +44,36 @@ class DRO(SVEA):
         current_Q1_aug, current_Q2_aug = self.critic(obs_aug, action)
         # critic_loss += self.svea_beta * \
         #                (F.mse_loss(current_Q1_aug, target_Q) + F.mse_loss(current_Q2_aug, target_Q))
-        critic_loss += self.svea_beta * \
-                       (torch.mean(log_prob*torch.square(current_Q1_aug-target_Q))
-                        + torch.mean(log_prob*torch.square(current_Q2_aug-target_Q)))
+        # if L is not None:
+        #     L.log('train_critic/loss', critic_loss, step)
+        # self.critic_optimizer.zero_grad()
+        # critic_loss.backward()
+        # self.critic_optimizer.step()
+        critic_loss_aug = self.svea_beta * \
+                       (F.mse_loss(current_Q1_aug, target_Q) + F.mse_loss(current_Q2_aug, target_Q))
 
         if L is not None:
-            L.log('train_critic/loss', critic_loss, step)
+            L.log('train_critic/loss', critic_loss + critic_loss_aug, step)
+            L.log('train_critic/original_loss', critic_loss, step)
+            L.log('train_critic/aug_loss', critic_loss_aug, step)
 
-        uniform_prob = torch.tensor(np.ones((self.params.size(0)))/self.params.size(0), dtype=torch.float).to(self.device)
-        regularization_loss = -torch.sum(torch.log(F.softmax(self.params))*uniform_prob)
-        critic_loss += self.prob_loss_weight*regularization_loss
-
-        if L is not None:
-            L.log('train_critic/reg_loss', regularization_loss, step)
-
-        self.critic_optimizer.zero_grad()
-        critic_loss.backward()
+        loss = [critic_loss, critic_loss_aug]
+        # self.critic_optimizer.zero_grad()
+        self.critic_optimizer.pc_backward(loss)
         self.critic_optimizer.step()
 
-        # # maximize the Q-diff
-        # with torch.no_grad():
-        #     original_Q = torch.min(current_Q1, current_Q2)
-        #     Q_diff = torch.square(current_Q1_aug - original_Q)+torch.square(current_Q2_aug-original_Q)
-        # prob_loss = torch.mean(-log_prob*Q_diff)
-        #
-        # if L is not None:
-        #     L.log('train_critic/prob_loss', prob_loss, step)
-        #
-        # self.dist_optimizer.zero_grad()
-        # prob_loss.backward()
-        # self.dist_optimizer.step()
+        # maximize the Q-diff
+        with torch.no_grad():
+            original_Q = torch.min(current_Q1, current_Q2)
+            Q_diff = torch.square(current_Q1_aug - original_Q)+torch.square(current_Q2_aug-original_Q)
+        prob_loss = torch.mean(-log_prob*Q_diff)
+
+        if L is not None:
+            L.log('train_critic/prob_loss', prob_loss, step)
+
+        self.dist_optimizer.zero_grad()
+        prob_loss.backward()
+        self.dist_optimizer.step()
 
     def update_actor_and_alpha(self, obs, L=None, step=None, update_alpha=True):
         mu, pi, log_pi, log_std = self.actor(obs, detach=True)

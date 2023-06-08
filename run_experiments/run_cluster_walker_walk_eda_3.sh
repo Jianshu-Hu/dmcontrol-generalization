@@ -2,7 +2,7 @@
 
 cd /bigdata/users/jhu/dmcontrol-generalization
 source /bigdata/users/yjiang/miniconda3/bin/activate
-conda activate drq
+conda activate drq_jianshu
 
 tag=walker_walk_random_crop_mix
 seed=3
