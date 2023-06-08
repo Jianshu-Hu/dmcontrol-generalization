@@ -254,6 +254,12 @@ def random_shift(imgs, pad=4):
 	return kornia.augmentation.RandomCrop((h, w))(imgs)
 
 
+def random_rotation(imgs, degrees):
+	# random rotation
+	rot = kornia.augmentation.RandomRotation(degrees=degrees)
+	return rot(imgs)
+
+
 def random_crop(x, size=84, w1=None, h1=None, return_w1_h1=False):
 	"""Vectorized CUDA implementation of random crop, imgs: (B,C,H,W), size: output size"""
 	assert (w1 is None and h1 is None) or (w1 is not None and h1 is not None), \

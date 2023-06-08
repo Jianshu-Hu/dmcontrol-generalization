@@ -6,11 +6,11 @@ from copy import deepcopy
 import utils
 import algorithms.modules as m
 import algorithms.equivariant_module as equim
-from algorithms.sac import SAC
+from algorithms.drq import DrQ
 
 
-class ESAC(SAC):
-    # equivariant SAC
+class EDrQ(DrQ):
+    # equivariant DrQ [K=2,M=2]
     def __init__(self, obs_shape, action_shape, args):
         super().__init__(obs_shape, action_shape, args)
         # use group equivariant CNN as shared encoder

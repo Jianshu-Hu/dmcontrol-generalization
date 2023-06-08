@@ -160,12 +160,23 @@ class ReplayBuffer(object):
 
         return obs, actions, rewards, next_obs, not_dones, pos
 
-    def sample_drq(self, n=None, pad=4):
+    def sample_drq(self, n=None, pad=4, degrees=5, data_aug_type='shift'):
         obs, actions, rewards, next_obs, not_dones = self.__sample__(n=n)
-        obs = augmentations.random_shift(obs, pad)
-        next_obs = augmentations.random_shift(next_obs, pad)
 
-        return obs, actions, rewards, next_obs, not_dones
+        if data_aug_type == 'shift':
+            obs_aug_1 = augmentations.random_shift(obs, pad)
+            next_obs_aug_1 = augmentations.random_shift(next_obs, pad)
+            obs_aug_2 = augmentations.random_shift(obs, pad)
+            next_obs_aug_2 = augmentations.random_shift(next_obs, pad)
+        elif data_aug_type == 'rot':
+            obs_aug_1 = augmentations.random_rotation(obs, degrees)
+            next_obs_aug_1 = augmentations.random_rotation(next_obs, degrees)
+            obs_aug_2 = augmentations.random_rotation(obs, degrees)
+            next_obs_aug_2 = augmentations.random_rotation(next_obs, degrees)
+        else:
+            raise ValueError('Undefined data augmentation type')
+
+        return obs_aug_1, obs_aug_2, actions, rewards, next_obs_aug_1, next_obs_aug_2, not_dones
 
     def sample_svea(self, n=None, pad=4):
         obs, actions, rewards, next_obs, not_dones = self.__sample__(n=n)
