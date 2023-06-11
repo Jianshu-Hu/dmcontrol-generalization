@@ -210,20 +210,3 @@ class sharedEquivariantEncoder(torch.nn.Module):
 #         obs = self.preprocess(obs)
 #         geo = nn.GeometricTensor(obs, nn.FieldType(self.c4_act, self.obs_channel * [self.c4_act.trivial_repr]))
 #         return self.conv(geo).tensor
-
-
-#
-if __name__ == "__main__":
-    obs = torch.randn(10, 9, 84, 84)
-    img_conv = sharedEquivariantEncoder(obs_shape=[9, 84, 84], n_out=128, initialize=True, N=4)
-    print(img_conv.out_shape)
-
-    # obs_geo = nn.GeometricTensor(obs, nn.FieldType(c4_act, obs_channel * [c4_act.trivial_repr]))
-    conv_out = img_conv(obs)
-    print(conv_out.size())
-    head_cnn = m.HeadCNN(img_conv.out_shape, 0, 32)
-    out = head_cnn(conv_out)
-    print(out.size())
-    proj = m.RLProjection(head_cnn.out_shape, 50)
-    out = proj(out)
-    print(out.size())

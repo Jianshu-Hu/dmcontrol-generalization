@@ -186,8 +186,10 @@ def main(args):
 
 			# Save agent periodically
 			if step > start_step and step % args.save_freq == 0:
+				agent.eval()
 				torch.save(agent.actor.state_dict(), os.path.join(model_dir, f'actor_{step}.pt'))
 				torch.save(agent.critic.state_dict(), os.path.join(model_dir, f'critic_{step}.pt'))
+				agent.train()
 
 			L.log('train/episode_reward', episode_reward, step)
 

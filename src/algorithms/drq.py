@@ -13,6 +13,7 @@ class DrQ(SAC): # [K=2, M=2]
 		super().__init__(obs_shape, action_shape, args)
 		# data aug type: shift or rot
 		self.data_aug_type = args.data_aug_type
+		self.degrees = args.degrees
 
 	def update_critic(self, obs_aug_1, obs_aug_2, action, reward,
 					next_obs_aug_1, next_obs_aug_2, not_done, L=None, step=None):
@@ -47,7 +48,7 @@ class DrQ(SAC): # [K=2, M=2]
 
 	def update(self, replay_buffer, L, step):
 		obs_aug_1, obs_aug_2, action, reward, next_obs_aug_1, next_obs_aug_2, not_done =\
-			replay_buffer.sample_drq(data_aug_type=self.data_aug_type)
+			replay_buffer.sample_drq(degrees=self.degrees, data_aug_type=self.data_aug_type)
 
 		self.update_critic(obs_aug_1, obs_aug_2, action, reward, next_obs_aug_1, next_obs_aug_2, not_done, L, step)
 

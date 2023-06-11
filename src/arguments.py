@@ -75,6 +75,7 @@ def parse_args():
 
 	# drq/edrq
 	parser.add_argument('--data_aug_type', default='shift', type=str)
+	parser.add_argument('--degrees', default=5.0, type=float)
 
 	# eval
 	parser.add_argument('--save_freq', default=100, type=int) # save every 100 episodes
