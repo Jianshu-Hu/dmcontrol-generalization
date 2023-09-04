@@ -11,6 +11,7 @@ from algorithms.wro import WRO
 from algorithms.dro import DRO
 from algorithms.esac import ESAC
 from algorithms.edrq import EDrQ
+from algorithms.esvea import ESVEA
 
 algorithm = {
 	'sac': SAC,
@@ -25,7 +26,8 @@ algorithm = {
 	'wro': WRO,
 	'dro': DRO,
 	'esac': ESAC,
-	'edrq': EDrQ
+	'edrq': EDrQ,
+	'esvea': ESVEA
 }
 
 

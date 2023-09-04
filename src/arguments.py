@@ -69,9 +69,12 @@ def parse_args():
 	parser.add_argument('--wro_weight_type', default='q_diff', type=str)
 	parser.add_argument('--projected_grad', default=False, action='store_true')
 
-	# esac
-	parser.add_argument('--esac_n_out', default=128, type=int)
-	parser.add_argument('--esac_N', default=4, type=int)
+	# esac/edrq/esvea
+	parser.add_argument('--equi_group', default='D1', type=str)
+	parser.add_argument('--inv_group', default='C1', type=str)
+
+	# esvea
+	parser.add_argument('--export_timesteps', default=-1, type=int)
 
 	# drq/edrq
 	parser.add_argument('--data_aug_type', default='shift', type=str)
@@ -92,7 +95,7 @@ def parse_args():
 	args = parser.parse_args()
 
 	assert args.algorithm in {'sac', 'rad', 'curl', 'pad', 'soda', 'drq', 'svea',
-						'eda', 'drc', 'wro', 'dro', 'esac', 'edrq'}, f'specified algorithm "{args.algorithm}" is not supported'
+						'eda', 'drc', 'wro', 'dro', 'esac', 'edrq', 'esvea'}, f'specified algorithm "{args.algorithm}" is not supported'
 
 	assert args.eval_mode in {'train', 'color_easy', 'color_hard', 'video_easy', 'video_hard', 'distracting_cs', 'none'}, f'specified mode "{args.eval_mode}" is not supported'
 	assert args.seed is not None, 'must provide seed for experiment'
